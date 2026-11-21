@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PawFall — Colby vs Perring Parkway Pete</title>
+<meta name="description" content="PawFall: a blocky Pitfall! parody. Colby the orange tabby explores a 120-screen jungle to win back 32 treasures from Perring Parkway Pete. Built by an agent swarm.">
+<meta property="og:title" content="PawFall — Colby vs Perring Parkway Pete">
+<meta property="og:description" content="A blocky Pitfall! parody built by an agent swarm.">
+<meta property="og:image" content="img/int-title.png">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a0710">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0710; --bg2: #14101c; --panel: #1b1626; --edge: #ffd23a;
+    --ink: #fff6e0; --ink2: #c9b26a; --leaf: #2f9a34; --leafL: #8ad65a;
+    --red: #d63a2f; --fur: #f08a24; --sky: #3a5a9a;
+    --px: "Press Start 2P", "Courier New", monospace;
+    --body: "Trebuchet MS", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) { --bg: #0a0710; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 var(--body);
+  }
+  img { max-width: 100%; height: auto; image-rendering: pixelated; display: block; }
+  a { color: var(--edge); }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--leafL); outline-offset: 3px; }
+  .wrap { width: min(1080px, 100% - 32px); margin-inline: auto; }
+  section { padding: 56px 0; border-top: 4px solid #000; }
+  h1, h2, h3 { font-family: var(--px); font-weight: 400; line-height: 1.4; margin: 0 0 16px; color: var(--edge); }
+  h1 { font-size: clamp(22px, 5vw, 40px); text-shadow: 4px 4px 0 #d63a2f, 0 0 18px rgba(255,210,58,.35); }
+  h2 { font-size: clamp(14px, 2.4vw, 20px); }
+  h3 { font-size: 12px; color: var(--leafL); }
+  p { margin: 0 0 14px; }
+  .lede { font-size: 1.1rem; color: var(--ink); max-width: 62ch; }
+  .muted { color: var(--ink2); }
+  code, kbd { font-family: "Courier New", monospace; background: #000; color: var(--leafL); padding: 1px 6px; border: 2px solid #000; }
+  kbd { color: var(--ink); border-color: var(--edge); border-bottom-width: 4px; border-radius: 4px; }
+
+  /* hero */
+  .hero {
+    position: relative; overflow: hidden; padding: 40px 0 56px; border-top: 0;
+    background:
+      linear-gradient(180deg, rgba(10,7,16,.1) 0%, rgba(10,7,16,.85) 100%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 2px, transparent 2px 4px),
+      linear-gradient(180deg, #1c3f78 0%, #3a5a9a 45%, #2f5a2a 70%, #1d4a1d 100%);
+  }
+  .hero .wrap { display: grid; gap: 28px; }
+  @media (min-width: 880px) { .hero .wrap { grid-template-columns: 1.05fr 1fr; align-items: center; } }
+  .logo { width: 100%; max-width: 520px; }
+  .hero .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 0 8px; }
+  .btn {
+    display: inline-block; font-family: var(--px); font-size: 12px; text-decoration: none;
+    padding: 14px 18px; color: #0a0710; background: var(--edge);
+    border: 4px solid #000; box-shadow: 0 6px 0 #000; transition: transform .08s, box-shadow .08s;
+  }
+  .btn:hover { transform: translateY(2px); box-shadow: 0 4px 0 #000; }
+  .btn.alt { background: var(--bg2); color: var(--ink); border-color: var(--ink2); box-shadow: 0 6px 0 #000; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .stat { background: rgba(10,7,16,.7); border: 3px solid var(--edge); padding: 8px 12px; min-width: 110px; }
+  .stat b { display: block; font-family: var(--px); font-size: 16px; color: var(--edge); }
+  .stat span { font-size: 13px; color: var(--ink2); }
+
+  /* cards */
+  .grid { display: grid; gap: 18px; }
+  @media (min-width: 720px) { .grid.two { grid-template-columns: 1fr 1fr; } .grid.three { grid-template-columns: repeat(3, 1fr); } }
+  .card { background: var(--panel); border: 4px solid #000; box-shadow: inset 0 0 0 3px var(--ink2); padding: 20px; }
+  .card.edge { box-shadow: inset 0 0 0 3px var(--edge); }
+
+  /* gallery */
+  .gallery { display: grid; gap: 18px; }
+  @media (min-width: 720px) { .gallery { grid-template-columns: 1fr 1fr; } }
+  figure { margin: 0; background: #000; border: 4px solid #000; box-shadow: inset 0 0 0 3px var(--ink2); padding: 10px; }
+  figure img { width: 100%; border: 2px solid #000; }
+  figcaption { font-size: 14px; color: var(--ink2); padding-top: 10px; }
+  figure.wide { grid-column: 1 / -1; }
+
+  /* controls table */
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 2px dashed #3a3150; vertical-align: top; }
+  th { font-family: var(--px); font-size: 10px; font-weight: 400; color: var(--edge); }
+
+  /* story timeline */
+  .phases { display: grid; gap: 14px; counter-reset: ph; }
+  .phase { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+  .phase .n {
+    font-family: var(--px); font-size: 12px; background: var(--leaf); color: var(--ink);
+    border: 3px solid #000; text-align: center; padding: 12px 0;
+  }
+  .meta { font-size: 13px; color: var(--ink2); }
+
+  .pill { display: inline-block; font-size: 12px; background: #000; border: 2px solid var(--ink2); color: var(--ink); padding: 2px 8px; margin: 2px 4px 2px 0; }
+
+  footer { padding: 36px 0 56px; border-top: 4px solid #000; background: #07050c; color: var(--ink2); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; justify-content: space-between; align-items: center; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero .logo { animation: bob 3.2s ease-in-out infinite; }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <img class="logo" src="img/int-title.png" alt="PawFall title screen: the logo over a jungle, Colby the cat and Pete the rat below">
+      <p class="lede" style="margin-top:18px">
+        Colby, an orange tabby jungle explorer with a pith helmet and a red scarf, must cross
+        120 screens of a Pitfall!-style jungle and win back 32 treasures from
+        Perring Parkway Pete, the rat in the pinstripe suit with a cheese stick.
+      </p>
+      <div class="cta">
+        <a class="btn" href="play/">Play now</a>
+        <a class="btn alt" href="#how">How to play</a>
+        <a class="btn alt" href="https://github.com/bsommers/pawfall">Source on GitHub</a>
+      </div>
+      <div class="stats" aria-label="Project at a glance">
+        <div class="stat"><b>120</b><span>screens</span></div>
+        <div class="stat"><b>32</b><span>treasures</span></div>
+        <div class="stat"><b>0</b><span>dependencies</span></div>
+        <div class="stat"><b data-count="agents">20</b><span>swarm agents</span></div>
+      </div>
+    </div>
+    <img src="img/int-play0.png" alt="Colby running through the jungle at the start of a level">
+  </div>
+</header>
+
+<section id="gallery">
+  <div class="wrap">
+    <h2>Screens</h2>
+    <p class="muted">Captured from the running game. Add new captures or GIFs by copying a
+      <code>&lt;figure&gt;</code> block below into the gallery; they are plain files in <code>img/</code>.</p>
+    <div class="gallery">
+      <figure>
+        <img src="img/int-play0.png" alt="Gameplay: Colby on the jungle path" loading="lazy">
+        <figcaption>Run, jump and vine-swing along the jungle path. The clock starts at 20:00.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/int-hole.png" alt="A tar pit and a hole on the path" loading="lazy">
+        <figcaption>Holes, tar pits and croc-infested water. Ladders and tunnels are shortcuts.</figcaption>
+      </figure>
+      <figure class="wide">
+        <img src="img/int-night.png" alt="Night scene in the jungle with fireflies" loading="lazy">
+        <figcaption>The sky runs from day to golden hour to dusk to night as the clock runs down.</figcaption>
+      </figure>
+      <!-- Future GIFs: <figure><img src="img/gameplay-jump.gif" alt="..."><figcaption>...</figcaption></figure> -->
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How to play</h2>
+    <div class="grid two">
+      <div class="card edge">
+        <h3>Controls</h3>
+        <table>
+          <tr><th>Action</th><th>Keys</th></tr>
+          <tr><td>Run</td><td><kbd>&larr;</kbd> <kbd>&rarr;</kbd> (or <kbd>A</kbd> <kbd>D</kbd>)</td></tr>
+          <tr><td>Climb ladders and vines</td><td><kbd>&uarr;</kbd> <kbd>&darr;</kbd> (or <kbd>W</kbd> <kbd>S</kbd>)</td></tr>
+          <tr><td>Jump</td><td><kbd>Space</kbd> <kbd>Z</kbd> <kbd>X</kbd></td></tr>
+          <tr><td>Pause</td><td><kbd>P</kbd> or <kbd>Esc</kbd></td></tr>
+          <tr><td>Mute / CRT / Fullscreen</td><td><kbd>M</kbd> / <kbd>C</kbd> / <kbd>F</kbd></td></tr>
+        </table>
+        <p class="meta" style="margin-top:12px">Gamepad d-pad and A work too. Touch devices get an on-screen d-pad and jump button.</p>
+      </div>
+      <div class="card">
+        <h3>The rules, Pitfall style</h3>
+        <ul style="margin:0;padding-left:20px">
+          <li>Start with <b>2000 points</b> and <b>3 lives</b>.</li>
+          <li>The clock counts down from <b>20:00</b>. Running out costs a life.</li>
+          <li>Collect the <b>32 treasures</b> (tuna tins, silver sardines, gold bars, diamond collars) for points.</li>
+          <li>Falling into a hole, tar, water or a croc, or touching fire, a cobra or a scorpion costs a life.</li>
+          <li>Walking underground moves you <b>3 screens</b> per tunnel step, like the original.</li>
+          <li>Pete ambushes you from the canopy on his screens. Watch for his billboards.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="characters">
+  <div class="wrap">
+    <h2>The characters</h2>
+    <div class="grid two">
+      <div class="card">
+        <h3>Colby</h3>
+        <p>An orange tabby with a pith helmet, a red scarf and green eyes. Explorer, cat, and the only one who
+          can reach the treasures. Plays it cool even when the logs are rolling at him.</p>
+        <span class="pill">hero</span><span class="pill">runs &amp; jumps</span><span class="pill">3 lives</span>
+      </div>
+      <div class="card">
+        <h3>Perring Parkway Pete</h3>
+        <p>A fat grey rat in a pinstripe suit, black shades, a gold tooth and a cheese stick. He stole 32 treasures
+          and scattered them across the jungle, then set up billboards for PETE'S PARKWAY PICKLES.
+          He taunts you from the canopy.</p>
+        <span class="pill">villain</span><span class="pill">ambushes</span><span class="pill">cheese stick</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="swarm">
+  <div class="wrap">
+    <h2>The swarm story</h2>
+    <p class="lede">PawFall was built by a swarm of AI agents working in parallel. Each agent owned one
+      module with a written contract, reported progress to a live tracker, and left a report behind.</p>
+    <div class="grid three" style="margin:22px 0">
+      <div class="card"><b class="stat-big" data-count="agents" style="font-family:var(--px);font-size:22px;color:var(--edge)">20</b><p class="meta">agents</p></div>
+      <div class="card"><b style="font-family:var(--px);font-size:22px;color:var(--edge)" data-count="sonnet">17</b><p class="meta">on Sonnet</p></div>
+      <div class="card"><b style="font-family:var(--px);font-size:22px;color:var(--edge)" data-count="haiku">3</b><p class="meta">on Haiku</p></div>
+    </div>
+    <div class="phases">
+      <div class="phase"><div class="n">P1</div><div class="card"><h3>Core</h3><p>Simulation, hazards, the world generator, Colby and Pete art, and the renderer.</p><p class="meta" data-count="phase-p1"></p></div></div>
+      <div class="phase"><div class="n">P2</div><div class="card"><h3>Content</h3><p>Scenery, critters, FX, sound effects, music, the UI shell, and the media tracker.</p><p class="meta" data-count="phase-p2"></p></div></div>
+      <div class="phase"><div class="n">P3</div><div class="card"><h3>Play-test</h3><p>An autopilot that plays the world, plus soak tuning.</p><p class="meta" data-count="phase-p3"></p></div></div>
+      <div class="phase"><div class="n">P4</div><div class="card"><h3>Ship</h3><p>This site, the docs, and the reusable factory tools that came out of the project.</p><p class="meta" data-count="phase-p4"></p></div></div>
+    </div>
+    <p class="meta" style="margin-top:18px">Full roster and reports: <a href="https://github.com/bsommers/pawfall">docs/swarm/</a>.</p>
+  </div>
+</section>
+
+<section id="tech">
+  <div class="wrap">
+    <h2>Tech notes</h2>
+    <div class="grid three">
+      <div class="card"><h3>Zero deps</h3><p>Plain ES modules and Node 22. No bundler, no framework, no runtime packages.</p></div>
+      <div class="card"><h3>Drawn by code</h3><p>All art is drawn into 320x192 pixel buffers from a fixed palette. Audio is synthesised with WebAudio.</p></div>
+      <div class="card"><h3>Deterministic</h3><p>The simulation uses a seeded RNG. The same seed replays the same run, which is how the autopilot tests the world.</p></div>
+    </div>
+    <p class="meta" style="margin-top:18px">Read more: <a href="https://github.com/bsommers/pawfall">HOW-IT-WAS-MADE</a> and the <a href="https://github.com/bsommers/pawfall">architecture contract</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>PawFall is an original parody. No Activision assets are used.</span>
+    <span><a href="play/">Play</a> · <a href="https://github.com/bsommers/pawfall">Repository</a> · <a href="https://github.com/bsommers/pawfall">README</a></span>
+  </div>
+</footer>
+
+<script>
+  // Fill the swarm counts from docs/swarm/plan.json when it is served next to the site.
+  // Falls back to the static numbers above when it is not available (e.g. a plain Pages deploy).
+  (async () => {
+    try {
+      const res = await fetch('../../.tracker/plan.json', { cache: 'no-store' });
+      if (!res.ok) return;
+      const plan = await res.json();
+      const agents = plan.agents || [];
+      const count = (pred) => agents.filter(pred).length;
+      const set = (sel, v) => document.querySelectorAll(sel).forEach((el) => { el.textContent = v; });
+      set('[data-count="agents"]', agents.length);
+      set('[data-count="sonnet"]', count((a) => a.model === 'sonnet'));
+      set('[data-count="haiku"]', count((a) => a.model === 'haiku'));
+      (plan.phases || []).forEach((ph) => {
+        const n = count((a) => a.phase === ph.id);
+        set(`[data-count="phase-${ph.id}"]`, `${n} agent${n === 1 ? '' : 's'}`);
+      });
+    } catch (_) { /* keep static values */ }
+  })();
+</script>
+</body>
+</html>

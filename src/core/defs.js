@@ -25,6 +25,7 @@ export const LAYOUT = Object.freeze({
 
 // ---------------------------------------------------------------- palette (all art uses ONLY these + shade()/mix() of them)
 export const PAL = Object.freeze({
+  peteHL: '#9a96a8', hatHL: '#e8d68a', scarfHL: '#ff6a58',
   outline: '#1a1420', black: '#0a0710', white: '#fff6e0',
   // colby (orange tabby explorer)
   furD: '#b8561a', fur: '#f08a24', furL: '#ffc26a', cream: '#fff0d0', stripe: '#a8430f', nose: '#ff8fa3', eye: '#7bd44a', eyeD: '#1f4a12',
@@ -82,8 +83,8 @@ export const TUNING = {                      // sim-core may tune these numbers 
   climbSpeed: 44,                            // ladder px/s
   hitW: 8, hitH: 18,                         // player hitbox (feet-centred): x±4, y-18..y
   spriteW: 16, spriteH: 24,                  // Colby frame size (feet at bottom-centre)
-  vine: { pivotY: 34, len: 62, amp: 0.95, period: 2.4 },   // pivot at pit centre x; amp radians; period seconds (see vineAngle)
-  grabR: 7,                                  // grab radius around vine tip (hands)
+  vine: { pivotY: 30, len: 58, amp: 0.85, period: 2.4 },   // pivot at pit centre x; amp radians; period seconds (see vineAngle)
+  grabR: 10,                                 // grab radius around vine tip (hands)
   logHitPenalty: 100, logStun: 0.5,          // log / cheese-wheel touch: lose points, brief knock-back stun
   sinkTime: 1.6,                             // seconds to sink in tar/quicksand/water before life lost
   deathTime: 1.6,                            // dying animation before respawn
@@ -122,10 +123,10 @@ export const SCORES = Object.freeze({ lifeLostPenalty: 0, logHit: -100, treasure
 // ---------------------------------------------------------------- entities (sim -> render)
 /**
  * Hazard entity (sim-hazards creates; sim-core iterates):
- * { id, kind, x, y /*feet*/, w, h, vx, dir, t /*age s*/, frame, layer:'surface'|'tunnel',
+ * { id, kind, x, y (feet), w, h, vx, dir, t (age s), frame, layer:'surface'|'tunnel',
  *   solidTop:boolean (player may stand on top: closed-mouth croc heads),
  *   lethal: null|'life'|'points' (current contact effect; may change each tick, e.g. croc mouth),
- *   dead:boolean, st:{} /*behaviour scratch*/ }
+ *   dead:boolean, st:{} (behaviour scratch) }
  * Render picks sprites from kind + frame (see ART names + frame semantics in ARCHITECTURE.md §7).
  */
 export const HAZARD_KINDS = Object.freeze(['log', 'stilllog', 'cheese', 'fire', 'snake', 'croc', 'scorpion']);

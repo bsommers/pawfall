@@ -205,6 +205,23 @@ header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-item
 .dirs span{font:600 10.5px/1 var(--mono);color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:4px;padding:5px 7px}
 .dirs span b{color:var(--accent)}
 
+
+/* media */
+.mt{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-bottom:14px}
+.mt .stat .v{font-size:20px}
+.aud{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;max-height:420px;overflow-y:auto}
+.arow{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:7px 9px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.arow .t{display:flex;align-items:center;gap:6px;font:600 11px/1.2 var(--mono);color:var(--ink2)}
+.arow .t b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.arow .t .kd{font:800 8.5px/1 var(--mono);letter-spacing:.1em;padding:3px 4px;border-radius:3px;background:rgba(5,8,16,.8);color:var(--accent);text-transform:uppercase}
+.arow .t .kd.music{color:var(--sonnet)}
+.arow .t .d{color:var(--ink3)}
+.arow canvas{width:100%;height:30px;display:block;background:#0a0f1c;border-radius:4px;cursor:pointer}
+.arow audio{width:100%;height:28px}
+.mh3{font:700 9px/1 var(--mono);letter-spacing:.16em;color:var(--ink3);text-transform:uppercase;margin:4px 0 8px}
+.phase .pb{height:3px;background:rgba(255,255,255,.12);border-radius:2px;margin-top:5px;overflow:hidden}
+.phase .pb i{display:block;height:100%;background:currentColor;opacity:.75;transition:width .6s}
+
 /* gallery */
 .gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .thumb{background:#0a0f1c;border:1px solid var(--line);border-radius:6px;overflow:hidden;cursor:zoom-in;position:relative;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
@@ -287,7 +304,11 @@ footer{margin-top:20px;color:var(--ink3);font:500 10.5px/1 var(--mono);text-alig
     <section class="panel"><div class="hd"><h2>Checks<span class="sub" id="cksub"></span></h2></div><div id="checks" style="max-height:330px;overflow-y:auto"></div></section>
   </div>
 
-  <section class="panel mb"><div class="hd"><h2>Art &amp; screenshots<span class="sub" id="galsub"></span></h2><span class="sp"></span><div class="tabs" id="galTabs"><button class="btn on" data-g="all">ALL</button><button class="btn" data-g="preview">PIXEL ART</button><button class="btn" data-g="shot">SHOTS</button></div></div><div id="gallery"></div></section>
+  <section class="panel mb" id="sec-media"><div class="hd"><h2>Media<span class="sub" id="medsub"></span></h2></div>
+    <div class="mt" id="mediaTotals"></div>
+    <div class="mh3">Audio</div><div id="audio"></div>
+    <div class="mh3" style="margin-top:14px">Art &amp; screenshots<span id="galsub" style="margin-left:10px;text-transform:none;letter-spacing:0;font-weight:500"></span></div>
+    <div class="tabs" id="galTabs" style="margin-bottom:10px"><button class="btn on" data-g="all">ALL</button><button class="btn" data-g="preview">PIXEL ART</button><button class="btn" data-g="shot">SHOTS</button></div><div id="gallery"></div></section>
 
   <div class="grid g-2">
     <section class="panel"><div class="hd"><h2>Recently modified</h2></div><div id="recent"></div></section>
@@ -401,8 +422,9 @@ function renderHeader() {
   });
   const ph = $('phases');
   if (!S.phases.length) emptyState(ph, 'No phases yet', ' — waiting for the orchestrator plan');
-  else { clearEmpty(ph); keyed(ph, S.phases, p => p.id, () => { const e = h('div', 'phase'); e.innerHTML = '<div class="n"></div><div class="t"></div>'; return e; }, (e, p, _n, i) => {
-    cls(e, 'phase ' + p.status); txt(e.querySelector('.n'), 'PHASE ' + i + ' · ' + p.status.toUpperCase()); txt(e.querySelector('.t'), p.name); e.title = p.name;
+  else { clearEmpty(ph); keyed(ph, S.phases, p => p.id, () => { const e = h('div', 'phase'); e.innerHTML = '<div class="n"></div><div class="t"></div><div class="pb"><i></i></div>'; return e; }, (e, p, _n, i) => {
+    cls(e, 'phase ' + p.status); const tot = p.total || 0, dn = p.done || 0; txt(e.querySelector('.n'), 'PHASE ' + i + ' · ' + p.status.toUpperCase() + (tot ? ' · ' + dn + '/' + tot + ' AGENTS' : '')); txt(e.querySelector('.t'), p.name); e.title = p.name + (tot ? ' — ' + dn + ' of ' + tot + ' agents done' : '');
+    e.querySelector('.pb').style.display = tot ? '' : 'none'; e.querySelector('.pb i').style.width = (tot ? Math.round(100 * dn / tot) : 0) + '%';
   }); }
 }
 function tickHeader() {
@@ -575,6 +597,52 @@ function renderLoc() {
 }
 function niceStep(v) { const p = Math.pow(10, Math.floor(Math.log10(Math.max(v, 1)))); const n = v / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * p; }
 function timeStep(msec) { const s = [10, 30, 60, 120, 300, 600, 900, 1800, 3600, 7200, 10800, 21600, 43200, 86400].map(x => x * 1000); for (const v of s) if (v >= msec) return v; return 86400000; }
+
+// ---------- media: totals + audio ----------
+const peakMem = {}; let curAud = null;
+function drawPeaks(cv, peaks, frac) {
+  const W = cv.clientWidth || 280, H = 30, dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (cv.width !== W * dpr) { cv.width = W * dpr; cv.height = H * dpr; }
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+  const n = peaks.length, bw = W / n, mid = H / 2;
+  for (let i = 0; i < n; i++) { const a = Math.max(1, peaks[i] * (H - 2)); c.fillStyle = i / n < frac ? '#ffc93c' : '#4a5a86'; c.fillRect(Math.floor(i * bw), mid - a / 2, Math.max(1, Math.ceil(bw) - 1), a); }
+}
+function fmtDur(d) { return d >= 60 ? Math.floor(d / 60) + ':' + String(Math.round(d % 60)).padStart(2, '0') : d.toFixed(d < 10 ? 2 : 1) + 's'; }
+function renderMedia() {
+  const m = S.media || {}, tb = $('mediaTotals');
+  const defs = [['sprites', 'Sprites built', m.sprites || 0, 'var(--accent)'], ['frames', 'Frames', m.frames || 0, 'var(--tabby)'], ['sfx', 'SFX', m.sfx || 0, SCOL.running], ['music', 'Music tracks', m.music || 0, 'var(--sonnet)'], ['shots', 'Screenshots', m.shots || 0, SCOL.done], ['gifs', 'GIFs', m.gifs || 0, 'var(--opus)']];
+  keyed(tb, defs, d => d[0], () => { const e = h('div', 'stat'); e.innerHTML = '<div class="l"><i></i><span></span></div><div class="v"></div>'; return e; }, (e, d, isNew) => {
+    const v = e.querySelector('.v'); const changed = !isNew && v.textContent !== String(d[2]);
+    txt(e.querySelector('.l span'), d[1]); e.querySelector('.l i').style.background = d[3]; txt(v, fmtN(d[2]));
+    if (changed) { e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump'); }
+  });
+  const box = $('audio'), au = S.audio || [];
+  txt($('medsub'), au.length ? au.length + ' sounds · ' + (m.sprites || 0) + ' sprites' : '');
+  if (!au.length) return emptyState(box, 'No audio yet', 'WAVs in out/sfx and out/music will show up here with players and waveforms.');
+  clearEmpty(box);
+  if (!box._grid) { box.innerHTML = ''; box._grid = h('div', 'aud'); box.appendChild(box._grid); }
+  keyed(box._grid, au, a => a.path, () => {
+    const e = h('div', 'arow'); e.innerHTML = '<div class="t"><span class="kd"></span><b></b><span class="d"></span></div><canvas></canvas><audio controls preload="none"></audio>'; return e;
+  }, (e, a) => {
+    const kd = e.querySelector('.kd'); cls(kd, 'kd ' + a.kind); txt(kd, a.kind); txt(e.querySelector('b'), a.name.replace(/\.wav$/i, '')); e.querySelector('b').title = a.path;
+    txt(e.querySelector('.d'), (a.duration ? fmtDur(a.duration) + ' · ' : '') + fmtB(a.size));
+    const url = '/files/' + a.path.split('/').map(encodeURIComponent).join('/') + '?v=' + Math.round(a.mtime);
+    const au = e.querySelector('audio'); if (au.getAttribute('src') !== url) au.setAttribute('src', url);
+    const cv = e.querySelector('canvas'), key = a.path + '@' + Math.round(a.mtime);
+    if (cv._key !== key) {
+      cv._key = key; cv._peaks = peakMem[key] || null;
+      if (cv._peaks) drawPeaks(cv, cv._peaks, 0);
+      else fetch('/api/wav-peaks?n=96&f=' + encodeURIComponent(a.path)).then(r => r.ok ? r.json() : null).then(j => { if (j && j.peaks) { peakMem[key] = j.peaks; cv._peaks = j.peaks; drawPeaks(cv, j.peaks, 0); } }).catch(() => { });
+    }
+    if (!au._bound) {
+      au._bound = true;
+      au.addEventListener('play', () => { if (curAud && curAud !== au) curAud.pause(); curAud = au; });
+      au.addEventListener('timeupdate', () => { if (cv._peaks && au.duration) drawPeaks(cv, cv._peaks, au.currentTime / au.duration); });
+      au.addEventListener('ended', () => { if (cv._peaks) drawPeaks(cv, cv._peaks, 0); });
+      cv.addEventListener('click', ev => { const r = cv.getBoundingClientRect(); const f = (ev.clientX - r.left) / r.width; if (au.duration) au.currentTime = au.duration * f; au.play().catch(() => { }); });
+    }
+  });
+}
 
 // ---------- gallery ----------
 let galList = [], galAll = false;
@@ -799,7 +867,7 @@ tabs('tlzoom', 'data-z', v => { tlZoom = v; S && renderTimeline(); });
 
 // ---------- render loop ----------
 function renderAll() {
-  const parts = [renderHeader, renderTimeline, renderSwarm, renderModels, renderFeed, renderChecks, renderLoc, renderGallery, renderTables];
+  const parts = [renderHeader, renderTimeline, renderSwarm, renderModels, renderFeed, renderChecks, renderLoc, renderMedia, renderGallery, renderTables];
   for (const f of parts) { try { f(); } catch (err) { console.error(f.name, err); } }
   if (openId) fillAgentModal();
   tick();

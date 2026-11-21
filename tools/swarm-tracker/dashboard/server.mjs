@@ -244,12 +244,81 @@ async function loadArtifacts() {
   return acc.slice(0, 100);
 }
 
+
+// ---------- media (audio / totals) ----------
+function parseWav(buf) {
+  // returns {rate, ch, bits, dataOff, dataLen} or null (PCM 8/16/24/32-bit or float32)
+  if (buf.length < 44 || buf.toString('latin1', 0, 4) !== 'RIFF' || buf.toString('latin1', 8, 12) !== 'WAVE') return null;
+  let off = 12, fmt = null;
+  while (off + 8 <= buf.length) {
+    const id = buf.toString('latin1', off, off + 4); let len = buf.readUInt32LE(off + 4); const body = off + 8;
+    if (id === 'fmt ' && body + 16 <= buf.length) fmt = { tag: buf.readUInt16LE(body), ch: buf.readUInt16LE(body + 2), rate: buf.readUInt32LE(body + 4), bits: buf.readUInt16LE(body + 14) };
+    else if (id === 'data' && fmt) { if (body + len > buf.length) len = buf.length - body; return { ...fmt, dataOff: body, dataLen: len }; }
+    off = body + len + (len & 1);
+  }
+  return null;
+}
+function wavDuration(w) { return w && w.rate && w.ch && w.bits ? w.dataLen / (w.rate * w.ch * (w.bits / 8)) : 0; }
+const peakCache = new Map(); // abs -> {mtimeMs, size, n, out}
+function computePeaks(buf, n) {
+  const w = parseWav(buf); if (!w) return null;
+  const bps = w.bits / 8, frame = bps * w.ch, frames = Math.floor(w.dataLen / frame);
+  const rd = (o) => w.tag === 3 && w.bits === 32 ? buf.readFloatLE(o) : w.bits === 16 ? buf.readInt16LE(o) / 32768 : w.bits === 8 ? (buf[o] - 128) / 128 : w.bits === 24 ? buf.readIntLE(o, 3) / 8388608 : w.bits === 32 ? buf.readInt32LE(o) / 2147483648 : 0;
+  const peaks = new Array(n).fill(0);
+  if (!frames) return { duration: 0, rate: w.rate, peaks };
+  for (let i = 0; i < n; i++) {
+    const a = Math.floor(i * frames / n), b = Math.max(a + 1, Math.floor((i + 1) * frames / n));
+    const step = Math.max(1, Math.floor((b - a) / 64)); let m = 0;
+    for (let f = a; f < b && f < frames; f += step) { const v = Math.abs(rd(w.dataOff + f * frame)); if (v > m) m = v; }
+    peaks[i] = Math.round(Math.min(1, m) * 255) / 255;
+  }
+  return { duration: wavDuration(w), rate: w.rate, peaks };
+}
+async function loadAudio() {
+  const acc = [];
+  for (const kind of ['sfx', 'music']) {
+    for (const d of await listDir(join(ROOT, 'out', kind))) {
+      if (!d.isFile() || !/\.wav$/i.test(d.name) || d.name.startsWith('.')) continue;
+      const p = join(ROOT, 'out', kind, d.name);
+      let st; try { st = await fsp.stat(p); } catch { continue; }
+      if (st.size < 44) continue;
+      let c = peakCache.get(p);
+      if (!c || c.mtimeMs !== st.mtimeMs || c.size !== st.size) {
+        let dur = 0;
+        try { const fh = await fsp.open(p, 'r'); const b = Buffer.alloc(Math.min(st.size, 4096)); await fh.read(b, 0, b.length, 0); await fh.close(); const w = parseWav(b); if (w) w.dataLen = Math.max(0, Math.min(st.size - w.dataOff, 0xFFFFFFFF)); dur = wavDuration(w); } catch { /* */ }
+        c = { mtimeMs: st.mtimeMs, size: st.size, dur, out: null, n: 0 }; peakCache.set(p, c);
+      }
+      acc.push({ kind, path: relative(ROOT, p).split(sep).join('/'), name: d.name, size: st.size, mtime: st.mtimeMs, duration: c.dur });
+    }
+  }
+  acc.sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === 'music' ? -1 : 1));
+  return acc;
+}
+async function loadMedia(gallery, audio) {
+  const previews = gallery.filter(g => g.kind === 'preview' && !/\.mat\.png$/i.test(g.name));
+  const sheets = new Set(previews.map(g => g.name.replace(/\.png$/i, '')));
+  let sprites = 0, frames = 0, tracked = false;
+  const defs = await readText(join(ROOT, 'src', 'core', 'defs.js'));
+  if (defs) {
+    const re = /\bA\(\s*'([\w-]+)'\s*,\s*'([\w-]+)'\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*'(\w+)'/g; let m;
+    while ((m = re.exec(defs))) { tracked = true; if (sheets.has(m[1])) { sprites++; frames += +m[5]; } }
+  }
+  if (!tracked) { sprites = sheets.size; frames = sheets.size; }
+  return {
+    sprites, frames, sheets: sheets.size,
+    sfx: audio.filter(a => a.kind === 'sfx').length, music: audio.filter(a => a.kind === 'music').length,
+    shots: gallery.filter(g => g.kind === 'shot' && !/\.gif$/i.test(g.name)).length,
+    gifs: gallery.filter(g => /\.gif$/i.test(g.name)).length,
+  };
+}
+
 // ---------- state assembly ----------
 const RANK = { failed: 0, blocked: 1, running: 2, queued: 3, done: 4 };
 async function buildState() {
-  const [plan, evs, checks, scan, gallery, artifacts] = await Promise.all([
-    loadPlan(), loadEvents(), loadChecks(), scanTree(), loadGallery(), loadArtifacts(),
+  const [plan, evs, checks, scan, gallery, artifacts, audio] = await Promise.all([
+    loadPlan(), loadEvents(), loadChecks(), scanTree(), loadGallery(), loadArtifacts(), loadAudio(),
   ]);
+  const media = await loadMedia(gallery, audio);
   const planAgents = Array.isArray(plan.agents) ? plan.agents.filter(a => a && a.id) : [];
   const ids = new Set(planAgents.map(a => str(a.id)));
   const agentsIn = planAgents.map(a => ({ ...a, id: str(a.id), inPlan: true }));
@@ -303,10 +372,10 @@ async function buildState() {
     tagline: str(plan.tagline),
     startedAt: isoOk(plan.startedAt) ? plan.startedAt : firstEvent,
     firstEvent,
-    phases: Array.isArray(plan.phases) ? plan.phases.filter(Boolean).map(p => ({ id: str(p.id), name: str(p.name, p.id), status: ['pending', 'active', 'done'].includes(p.status) ? p.status : 'pending' })) : [],
+    phases: Array.isArray(plan.phases) ? plan.phases.filter(Boolean).map(p => { const pa = agents.filter(a => a.phase === str(p.id)); return { id: str(p.id), name: str(p.name, p.id), status: ['pending', 'active', 'done'].includes(p.status) ? p.status : 'pending', total: pa.length, done: pa.filter(a => a.state === 'done').length, running: pa.filter(a => a.state === 'running').length }; }) : [],
     agents, counts, progress,
     feed: feed.slice(0, 120),
-    checks, gallery, artifacts,
+    checks, gallery, artifacts, audio, media,
     totals: scan.totals,
     loc: history.slice(-1500),
     recent,
@@ -339,7 +408,7 @@ function broadcast() {
 }
 
 // ---------- HTTP ----------
-const MIME = { '.png': 'image/png', '.gif': 'image/gif', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8', '.html': 'text/html; charset=utf-8', '.svg': 'image/svg+xml', '.zip': 'application/zip' };
+const MIME = { '.png': 'image/png', '.gif': 'image/gif', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8', '.html': 'text/html; charset=utf-8', '.svg': 'image/svg+xml', '.zip': 'application/zip', '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg' };
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://x');
@@ -363,6 +432,24 @@ const server = http.createServer(async (req, res) => {
       req.on('close', () => clients.delete(res));
       return;
     }
+    if (path === '/api/wav-peaks') {
+      const rel = url.searchParams.get('f') || '';
+      const n = Math.max(8, Math.min(512, parseInt(url.searchParams.get('n') || '96', 10) || 96));
+      const abs = resolve(ROOT, rel);
+      const okBase = ['out', 'dist'].some(b => abs.startsWith(join(ROOT, b) + sep));
+      if (!rel || rel.includes('\0') || !okBase || !/\.wav$/i.test(abs)) { res.writeHead(403, { 'Content-Type': 'text/plain' }); return res.end('forbidden'); }
+      let st; try { st = await fsp.stat(abs); } catch { st = null; }
+      if (!st || !st.isFile() || st.size > 64 * 1024 * 1024) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('not found'); }
+      let c = peakCache.get(abs);
+      if (!c) { c = { mtimeMs: 0, size: 0, dur: 0, out: null, n: 0 }; peakCache.set(abs, c); }
+      if (!c.out || c.mtimeMs !== st.mtimeMs || c.size !== st.size || c.n !== n) {
+        const r = computePeaks(await fsp.readFile(abs), n);
+        if (!r) { res.writeHead(422, { 'Content-Type': 'text/plain' }); return res.end('not a wav'); }
+        Object.assign(c, { mtimeMs: st.mtimeMs, size: st.size, n, out: r, dur: r.duration });
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
+      return res.end(JSON.stringify(c.out));
+    }
     if (path.startsWith('/files/')) {
       let rel;
       try { rel = decodeURIComponent(path.slice(7)); } catch { rel = ''; }
@@ -380,11 +467,19 @@ const server = http.createServer(async (req, res) => {
         if (rb) bases.push(rb + sep);
       }
       if (!bases.some(b => real.startsWith(b))) { res.writeHead(403, { 'Content-Type': 'text/plain' }); return res.end('forbidden'); }
-      res.writeHead(200, {
+      const hdr = {
         'Content-Type': MIME[extname(abs).toLowerCase()] || 'application/octet-stream',
-        'Content-Length': st.size,
+        'Accept-Ranges': 'bytes',
         'Cache-Control': url.searchParams.has('v') ? 'public, max-age=31536000, immutable' : 'no-cache',
-      });
+      };
+      const rm = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+      if (rm && (rm[1] || rm[2])) { // Range support so <audio> can seek
+        let a = rm[1] ? +rm[1] : Math.max(0, st.size - +rm[2]), b = rm[1] && rm[2] ? Math.min(+rm[2], st.size - 1) : st.size - 1;
+        if (a > b || a >= st.size) { res.writeHead(416, { 'Content-Range': 'bytes */' + st.size }); return res.end(); }
+        res.writeHead(206, { ...hdr, 'Content-Length': b - a + 1, 'Content-Range': `bytes ${a}-${b}/${st.size}` });
+        const rs = createReadStream(abs, { start: a, end: b }); rs.on('error', () => res.destroy()); return rs.pipe(res);
+      }
+      res.writeHead(200, { ...hdr, 'Content-Length': st.size });
       const s = createReadStream(abs);
       s.on('error', () => res.destroy());
       return s.pipe(res);
