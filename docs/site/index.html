@@ -83,6 +83,8 @@
   figure img { width: 100%; border: 2px solid #000; }
   figcaption { font-size: 14px; color: var(--ink2); padding-top: 10px; }
   figure.wide { grid-column: 1 / -1; }
+  figure.concept { margin: 0 0 12px; padding: 6px; }
+  img.sprites { display: block; max-width: 100%; height: auto; image-rendering: pixelated; margin: 0 auto 12px; }
 
   /* controls table */
   table { width: 100%; border-collapse: collapse; font-size: 15px; }
@@ -116,9 +118,9 @@
     <div>
       <img class="logo" src="img/int-title.png" alt="PawFall title screen: the logo over a jungle, Colby the cat and Pete the rat below">
       <p class="lede" style="margin-top:18px">
-        Colby, an orange tabby jungle explorer with a pith helmet and a red scarf, must cross
+        SuperColby, an orange tabby in a blue C-shield shirt and an orange cape, must cross
         120 screens of a Pitfall!-style jungle and win back 32 treasures from
-        Perring Parkway Pete, the rat in the pinstripe suit with a cheese stick.
+        Perring Parkway Pete, a red-eyed sewer rat in a tactical vest.
       </p>
       <div class="cta">
         <a class="btn" href="play/">Play now</a>
@@ -195,17 +197,21 @@
     <h2>The characters</h2>
     <div class="grid two">
       <div class="card">
-        <h3>Colby</h3>
-        <p>An orange tabby with a pith helmet, a red scarf and green eyes. Explorer, cat, and the only one who
-          can reach the treasures. Plays it cool even when the logs are rolling at him.</p>
+        <h3>SuperColby</h3>
+        <figure class="concept"><img src="img/concept/supercolby-sheet.jpg" alt="SuperColby concept sheet: a round orange tabby in a blue shirt with a red and yellow C shield and an orange cape, front and side view" loading="lazy"></figure>
+        <img class="sprites" src="img/concept/supercolby-sprites.png" alt="SuperColby in-game pixel sprites: idle, run, jump, climb and cheer" loading="lazy">
+        <p>A round orange tabby with green eyes, a blue shirt with a C on the shield, and an orange cape.
+          Cat, hero, and the only one who can reach the treasures. Plays it cool even when the logs are rolling at him.</p>
         <span class="pill">hero</span><span class="pill">runs &amp; jumps</span><span class="pill">3 lives</span>
       </div>
       <div class="card">
         <h3>Perring Parkway Pete</h3>
-        <p>A fat grey rat in a pinstripe suit, black shades, a gold tooth and a cheese stick. He stole 32 treasures
+        <figure class="concept"><img src="img/concept/pete-sheet.jpg" alt="Perring Parkway Pete concept sheet: a scruffy dark rat with red eyes, bared drooling fangs and a tactical vest, front and side view" loading="lazy"></figure>
+        <img class="sprites" src="img/concept/pete-sprites.png" alt="Pete in-game pixel sprites: idle and snarling" loading="lazy">
+        <p>A scruffy sewer rat with red eyes, drooling fangs, long claws and a scuffed tactical vest. He stole 32 treasures
           and scattered them across the jungle, then set up billboards for PETE'S PARKWAY PICKLES.
           He taunts you from the canopy.</p>
-        <span class="pill">villain</span><span class="pill">ambushes</span><span class="pill">cheese stick</span>
+        <span class="pill">villain</span><span class="pill">ambushes</span><span class="pill">throws cheese</span>
       </div>
     </div>
   </div>

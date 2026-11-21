@@ -463,17 +463,17 @@ function signPete(f) {
   b.rect(3, 15, 8, 9, PAL.can); b.rect(4, 16, 6, 7, PAL.leafL); b.rect(4, 14, 6, 1, PAL.gold); b.hline(4, 15, 6, PAL.goldD);
   b.vline(3, 15, 9, PAL.white); b.vline(10, 16, 8, PAL.silverD); b.hline(3, 23, 8, PAL.silverD);
   b.rect(5, 17, 2, 5, PAL.leaf); b.set(5, 17, PAL.leafHL); b.rect(8, 18, 1, 4, PAL.leaf); b.set(8, 18, PAL.leafHL);
-  // Pete's grinning face (right)
-  b.rect(29, 3, 9, 9, PAL.peteFur); b.rect(28, 5, 1, 5, PAL.peteFur);
-  b.rect(29, 1, 2, 3, PAL.peteEar); b.rect(36, 1, 2, 3, PAL.peteEar); b.set(29, 1, PAL.peteFurD); b.set(37, 1, PAL.peteFurD);
-  b.rect(29, 5, 9, 2, PAL.peteShade); b.set(33, 5, PAL.peteFurD);                           // shades
-  b.set(30, 5, PAL.silverD); b.set(36, 5, PAL.silverD);
-  b.rect(31, 8, 6, 1, PAL.peteFurD); b.set(33, 7, PAL.nose);
-  b.rect(30, 9, 8, 2, PAL.white); b.set(32, 9, PAL.peteTooth); b.set(32, 10, PAL.peteTooth);   // grin, gold tooth
-  b.hline(30, 11, 8, PAL.peteShade); b.set(30, 9, PAL.peteShade); b.set(37, 9, PAL.peteShade);
-  b.rect(37, 10, 5, 1, PAL.cheese); b.set(41 > 39 ? 39 : 41, 10, PAL.cheeseD); // cheese stick (clipped at the board edge)
-  b.rect(29, 12, 9, 2, PAL.peteSuit); b.set(33, 12, PAL.peteTie); b.set(33, 13, PAL.peteTie);   // collar/suit
-  b.set(30, 13, PAL.peteStripe); b.set(36, 13, PAL.peteStripe);
+  // Pete's snarling face (right): dark rat, red eyes, fangs, vest straps
+  b.rect(29, 3, 9, 9, PAL.rat); b.rect(28, 5, 1, 5, PAL.rat); b.hline(29, 3, 4, PAL.ratL);
+  b.rect(29, 1, 2, 3, PAL.ratSkin); b.rect(36, 1, 2, 3, PAL.ratSkin); b.set(29, 1, PAL.ratD); b.set(37, 1, PAL.ratD);
+  b.set(30, 4, PAL.ratD); b.set(31, 5, PAL.ratD); b.set(36, 4, PAL.ratD); b.set(35, 5, PAL.ratD);   // angry brows
+  b.set(31, 6, PAL.ratEye); b.set(35, 6, PAL.ratEye);                                               // red eyes
+  b.rect(32, 7, 3, 1, PAL.ratD); b.set(33, 7, PAL.ratSkin);                                         // snout + nose
+  b.rect(30, 9, 8, 2, PAL.crocMouth); b.hline(30, 8, 8, PAL.outline);                               // snarl
+  b.set(31, 9, PAL.fang); b.set(36, 9, PAL.fang); b.set(33, 10, PAL.fang); b.set(34, 10, PAL.fang);  // fangs
+  b.set(31, 11, PAL.drool);
+  b.hline(30, 11, 7, PAL.ratD);
+  b.rect(29, 12, 9, 2, PAL.vest); b.set(31, 12, PAL.vestD); b.set(31, 13, PAL.vestD); b.set(35, 12, PAL.vestD); b.set(35, 13, PAL.vestD); // vest
   if (f) { // flap: board's top-right corner curls (corner pixels dropped, edge highlight moved)
     b.erase(39, 0); b.erase(38, 0); b.erase(39, 1); b.set(38, 1, PAL.trunkD); b.set(39, 2, PAL.trunkD); b.set(37, 0, PAL.trunkL);
     b.set(0, 25, PAL.trunkD); b.set(1, 25, PAL.trunkD);

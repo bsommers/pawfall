@@ -187,23 +187,23 @@ function logo() {
 }
 
 // ------------------------------------------------------------------ title scene (320x110)
-const COLBY = [
-  '....ff.....',
-  '....ff.....',
-  '...hhhhh...',
-  '..hhhhhhH..',
-  '..bbbbbbb..',
+const COLBY = [ // SuperColby: ears, blue shirt with the C shield, cape behind
+  '...........',
+  '...........',
+  '..f....f...',
+  '..ff..ff...',
+  '..fffffff..',
   '.fFffffFf..',
   '.fcfefcfe..',
   '..fcccnc...',
-  '..ssssss...',
-  '..ffFfff...',
-  '..fFfffFf..',
+  '..uuRYRu...',
+  '.CuuuRuu...',
+  '.CfcccfFf..',
   '..fffff.f..',
   '...kk.kk...',
 ];
 function tinyColby(b, x0, y0, kick) {
-  const key = { f: PAL.fur, F: PAL.stripe, c: PAL.cream, e: PAL.eyeD, n: PAL.nose, h: PAL.hat, H: PAL.hatD, b: PAL.hatBand, s: PAL.scarf, k: PAL.boot };
+  const key = { f: PAL.fur, F: PAL.stripe, c: PAL.cream, e: PAL.eyeD, n: PAL.nose, u: PAL.shirt, R: PAL.shieldR, Y: PAL.shieldY, C: PAL.cape, k: PAL.boot };
   const t = mk(11, 13);
   COLBY.forEach((row, y) => [...row].forEach((ch, x) => { if (key[ch]) t.set(x, y, key[ch]); }));
   t.set(4, 6, PAL.eye); t.set(7, 6, PAL.eye);

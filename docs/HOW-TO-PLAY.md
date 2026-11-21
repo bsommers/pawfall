@@ -1,6 +1,6 @@
 # How to play PawFall
 
-You are **Colby**, an orange tabby jungle explorer with a pith helmet and a red scarf. Perring Parkway Pete, a fat grey rat in a pinstripe suit, has stolen 32 treasures and scattered them across a 120-screen jungle. Get them back.
+You are **SuperColby**, an orange tabby in a blue C-shield shirt and an orange cape. Perring Parkway Pete, a feral red-eyed rat in a tactical vest, has stolen 32 treasures and scattered them across a 120-screen jungle. Get them back.
 
 ## Controls
 

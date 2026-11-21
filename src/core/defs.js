@@ -27,11 +27,15 @@ export const LAYOUT = Object.freeze({
 export const PAL = Object.freeze({
   peteHL: '#9a96a8', hatHL: '#e8d68a', scarfHL: '#ff6a58',
   outline: '#1a1420', black: '#0a0710', white: '#fff6e0',
-  // colby (orange tabby explorer)
+  // colby (orange tabby; SuperColby costume below)
   furD: '#b8561a', fur: '#f08a24', furL: '#ffc26a', cream: '#fff0d0', stripe: '#a8430f', nose: '#ff8fa3', eye: '#7bd44a', eyeD: '#1f4a12',
   hat: '#c9b26a', hatD: '#8f7a3c', hatBand: '#8a2a1a', scarf: '#d63a2f', boot: '#5a3a1a',
-  // pete (Perring Parkway Pete: fat grey rat in a pinstripe suit, shades, gold tooth)
+  // SuperColby costume (blue shirt, red/yellow C shield, orange cape)
+  shirt: '#3a6fc4', shirtD: '#28508f', shirtL: '#5a8ee0', shieldR: '#d63a2f', shieldY: '#ffd23a', cape: '#d23c1c', capeD: '#8a240c', capeL: '#f0663a',
+  // pete v1 suit colours (still used by HUD panels, mountains, registry tints)
   peteFur: '#7a7688', peteFurD: '#4f4b5e', peteSuit: '#2a2f55', peteSuitL: '#444c85', peteStripe: '#8d96d6', peteTie: '#ffd23a', peteTooth: '#ffd23a', peteShade: '#0a0710', peteEar: '#e8a0b0',
+  // pete v2 (feral sewer rat: dark matted fur, red eyes, fangs, tactical vest)
+  ratD: '#2a2420', rat: '#4a423b', ratL: '#72675c', ratBelly: '#5e564e', ratSkin: '#b07a78', ratSkinD: '#7a4e4e', ratEye: '#ff2a2a', ratEyeL: '#ffb0a0', fang: '#f0e2a8', drool: '#e8f0f0', vest: '#2c2e2a', vestL: '#4a4d46', vestD: '#161814',
   // jungle
   leafD: '#0b3d1a', leaf: '#1d7a2c', leafM: '#2f9a34', leafL: '#3fae3f', leafHL: '#8ad65a', leafDark2: '#06240f',
   trunkD: '#3d2610', trunk: '#5a3a1a', trunkL: '#7b4f26', trunkHL: '#a06a34',
@@ -166,18 +170,18 @@ export const MUSIC = Object.freeze(['title', 'jungle', 'underground', 'dusk', 'g
 const A = (module, name, w, h, frames, kind, desc) => ({ module, name, w, h, frames, kind, desc });
 export const ART = Object.freeze([
   // --- module 'colby' : the hero and the villain
-  A('colby', 'colby_idle', 16, 24, 2, 'sprite', 'Colby standing (tail sway / blink), pith helmet, red scarf'),
+  A('colby', 'colby_idle', 16, 24, 2, 'sprite', 'SuperColby standing (tail sway / blink): blue shirt with C shield, orange cape'),
   A('colby', 'colby_run', 16, 24, 6, 'sprite', 'run cycle, 6 frames, tail streaming'),
   A('colby', 'colby_jump', 16, 24, 3, 'sprite', 'rise / peak (tucked) / fall (paws out)'),
   A('colby', 'colby_climb', 16, 24, 2, 'sprite', 'ladder climb, seen from behind/side, alternate paws'),
   A('colby', 'colby_swing', 16, 24, 2, 'sprite', 'hanging on a vine: both paws up top (frame0 straight, frame1 legs kicked)'),
   A('colby', 'colby_hurt', 16, 24, 2, 'sprite', 'stunned/knocked back, dizzy eyes'),
   A('colby', 'colby_sink', 16, 24, 3, 'sprite', 'sinking: arms up, wide eyes; frames get progressively lower (cut at bottom by a pit surface drawn over)'),
-  A('colby', 'colby_dead', 16, 24, 2, 'sprite', 'ghost/flat KO pose: X eyes, hat flopped off; frame1 = halo'),
-  A('colby', 'colby_win', 16, 24, 3, 'sprite', 'cheering, paws up, helmet tossed (loop)'),
+  A('colby', 'colby_dead', 16, 24, 2, 'sprite', 'KO pose: X eyes, cape limp; frame1 = halo'),
+  A('colby', 'colby_win', 16, 24, 3, 'sprite', 'cheering, paws up, cape billowing (loop)'),
   A('colby', 'colby_life', 8, 8, 1, 'sprite', 'tiny Colby head icon for the HUD lives counter'),
-  A('colby', 'pete_idle', 40, 48, 2, 'sprite', 'Perring Parkway Pete: fat grey rat, pinstripe suit, black shades, gold tooth, cigar-free (cheese-stick in mouth); smug stance'),
-  A('colby', 'pete_laugh', 40, 48, 2, 'sprite', 'Pete laughing, belly shaking'),
+  A('colby', 'pete_idle', 40, 48, 2, 'sprite', 'Perring Parkway Pete: feral dark rat, red eyes, drooling fangs, tactical vest, claws out'),
+  A('colby', 'pete_laugh', 40, 48, 2, 'sprite', 'Pete snarling/laughing, jaws wide, body shaking'),
   A('colby', 'pete_branch', 24, 24, 2, 'sprite', 'small Pete peeking from the canopy / hanging from a branch (throwing pose frame1); anchor bottom-centre'),
   A('colby', 'pete_head', 16, 16, 2, 'sprite', 'Pete head icon for taunt banners (frame1 = grin)'),
   // --- module 'critters' : hazards + treasures

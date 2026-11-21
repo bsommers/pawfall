@@ -1,6 +1,6 @@
 # PawFall
 
-Colby, an orange tabby jungle explorer, runs, jumps and vine-swings through a 120-screen jungle to win back 32 treasures from Perring Parkway Pete, a rat in a pinstripe suit. It is a blocky parody of Activision's *Pitfall!* (1982), built with zero dependencies and no bundler.
+SuperColby, an orange tabby in a caped C-shield shirt, runs, jumps and vine-swings through a 120-screen jungle to win back 32 treasures from Perring Parkway Pete, a feral red-eyed rat in a tactical vest. It is a blocky parody of Activision's *Pitfall!* (1982), built with zero dependencies and no bundler.
 
 It was built by an agent swarm: 20 agents in 4 phases, each owning one module under a written contract. See [docs/HOW-IT-WAS-MADE.md](docs/HOW-IT-WAS-MADE.md).
 
