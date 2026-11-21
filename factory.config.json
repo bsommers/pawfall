@@ -1,0 +1,15 @@
+{
+  "style": {
+    "id": "retro-8bit-sidescroller",
+    "version": "1.0.0",
+    "theme": "jungle",
+    "tags": [
+      "retro",
+      "8bit",
+      "pixel",
+      "platformer",
+      "side-scroller",
+      "2d"
+    ]
+  }
+}

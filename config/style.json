@@ -1,0 +1,253 @@
+{
+  "id": "retro-8bit-sidescroller",
+  "name": "Retro 8-bit Side-scroller",
+  "description": "NES/Atari-era flat-screen platformer: tiny native canvas, hard-locked palette, 1px outlines, pulse-wave chip audio. The PawFall reference style.",
+  "genre": [
+    "platformer",
+    "arcade",
+    "screen-based"
+  ],
+  "camera": "side-scroller",
+  "render": {
+    "tech": "canvas2d-pixel",
+    "dimension": "2d",
+    "resolution": {
+      "width": 320,
+      "height": 180,
+      "scaling": "integer-nearest",
+      "integerOnly": true
+    },
+    "notes": "Render to an offscreen 320x180 canvas, blit with imageSmoothingEnabled=false; letterbox when the window is not an integer multiple."
+  },
+  "palette": {
+    "policy": "locked",
+    "maxColors": 32,
+    "rampSize": 4,
+    "notes": "One shared PAL table; every sprite pixel must come from it (art-kit lockPalette.offenders must be empty)."
+  },
+  "art": {
+    "kit": "art-kit",
+    "tileSize": 16,
+    "spriteSize": [
+      16,
+      24
+    ],
+    "outline": "1px-dark",
+    "settings": {
+      "sheet": "packSheet",
+      "ascii": true
+    }
+  },
+  "character": {
+    "kit": "character-kit",
+    "rig": "param-rig",
+    "animFps": 12
+  },
+  "audio": {
+    "engine": "chip-pulse",
+    "channels": 4,
+    "bitDepth": 8,
+    "sampleRate": 22050,
+    "mood": "bouncy, bright",
+    "settings": {
+      "waves": [
+        "pulse",
+        "triangle",
+        "noise"
+      ],
+      "duty": [
+        0.125,
+        0.25,
+        0.5
+      ]
+    }
+  },
+  "fx": [
+    {
+      "id": "crt",
+      "default": true,
+      "strength": 0.4
+    },
+    {
+      "id": "scanlines",
+      "default": true,
+      "strength": 0.25
+    },
+    {
+      "id": "screen-shake",
+      "default": true,
+      "strength": 0.5
+    },
+    {
+      "id": "particles",
+      "default": true
+    },
+    {
+      "id": "vignette",
+      "default": false
+    }
+  ],
+  "physics": {
+    "model": "tile/strip kinematics, gravity and jump, ladders, vine pendulum",
+    "fixedStep": 0.016666666666666666,
+    "notes": "Integer-ish positions in logical pixels; deterministic."
+  },
+  "worldgen": {
+    "method": "seeded circular screen table with fairness validator",
+    "seeded": true
+  },
+  "input": {
+    "scheme": "arrows/WASD + jump; one action button",
+    "devices": [
+      "keyboard",
+      "gamepad",
+      "touch"
+    ]
+  },
+  "performance": {
+    "targetFps": 60,
+    "frameBudgetMs": 8,
+    "minDevice": "low",
+    "drawCalls": 400,
+    "memoryMB": 64
+  },
+  "swarm": {
+    "shape": "contract-first fan-out: 1 architect, 4-6 module agents, 1 integrator, 1 QA",
+    "agentCount": [
+      8,
+      14
+    ],
+    "roles": [
+      {
+        "role": "architect (ARCHITECTURE.md contract)",
+        "model": "opus"
+      },
+      {
+        "role": "art agents (sprites, tiles, scenery)",
+        "model": "sonnet"
+      },
+      {
+        "role": "sim/gameplay agents",
+        "model": "sonnet"
+      },
+      {
+        "role": "audio agents",
+        "model": "sonnet"
+      },
+      {
+        "role": "render/UI shell",
+        "model": "sonnet"
+      },
+      {
+        "role": "QA bot + verification",
+        "model": "sonnet"
+      },
+      {
+        "role": "boilerplate, lint, docs",
+        "model": "haiku"
+      }
+    ]
+  },
+  "verification": [
+    "node --test passes on all modules",
+    "palette lock: zero off-palette pixels in every sheet",
+    "screenshot at 4 screens shows readable silhouettes at 1x",
+    "bot completes a seeded run without a fairness violation",
+    "FPS >= 55 on the low-end tier",
+    "no console errors on load"
+  ],
+  "pitfalls": [
+    "fractional scaling blurs pixels: keep integerOnly",
+    "colours added ad hoc break the palette lock",
+    "frame-rate dependent physics: use the fixed step",
+    "audio autoplay blocked before first input"
+  ],
+  "examples": [
+    {
+      "game": "PawFall",
+      "role": "reference"
+    },
+    {
+      "game": "catxzzon",
+      "role": "fits"
+    }
+  ],
+  "tags": [
+    "retro",
+    "8bit",
+    "pixel",
+    "platformer",
+    "side-scroller",
+    "2d"
+  ],
+  "requires": {
+    "kits": [
+      "art-kit",
+      "character-kit",
+      "audio-kit",
+      "fx-kit"
+    ],
+    "libs": [
+      "platformer-physics",
+      "hazard-kit",
+      "world-gen"
+    ],
+    "skills": [
+      "designing-exhaustive-test-cases"
+    ]
+  },
+  "tech": {
+    "dependencies": "none",
+    "choices": [
+      "Canvas2D",
+      "WebAudio",
+      "ES modules"
+    ],
+    "limits": [
+      "no sub-pixel art",
+      "palette capped at 32"
+    ]
+  },
+  "recommend": {
+    "keywords": {
+      "platformer": 6,
+      "pitfall": 8,
+      "8-bit": 7,
+      "8bit": 7,
+      "nes": 6,
+      "atari": 6,
+      "jungle": 3,
+      "jump": 3,
+      "vine": 4,
+      "retro": 4,
+      "side-scroller": 5,
+      "sidescroller": 5,
+      "parody": 2,
+      "arcade": 2,
+      "pixel": 3,
+      "2d": 1
+    },
+    "anti": {
+      "3d": 6,
+      "isometric": 6,
+      "fps": 6,
+      "shooter": 2
+    },
+    "cost": 2,
+    "platforms": [
+      "web",
+      "desktop"
+    ],
+    "pros": [
+      "cheapest to build and verify",
+      "deterministic and bot-testable",
+      "runs anywhere"
+    ],
+    "cons": [
+      "small canvas limits detail",
+      "palette discipline needed"
+    ]
+  },
+  "themingGuide": "THEMING.md",
+  "version": "1.0.0"
+}
